@@ -1,4 +1,4 @@
-# CSP Bypass via Navigation Techniques - Lab Documentation
+# CSP Bypass via Navigation Techniques 
 
 > **Lab URL**: `https://pzcihwu2.xssy.uk/target.ftl?name=`  
 > **Parameter Injeksi**: `name`  
